@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "262967826492",
+    "firebase_url": "https://mathmania-8e002.firebaseio.com",
+    "project_id": "mathmania-8e002",
+    "storage_bucket": "mathmania-8e002.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262967826492:android:3e0f03abeb4b2297508b39",
+        "android_client_info": {
+          "package_name": "com.pbaileyapps.android.mathmania"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "262967826492-1k8ordub1b64abobusd11gi7bmetbiib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxpvwNbg1jKPmoBBK5IP1g-YXjRf-_hQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "262967826492-1k8ordub1b64abobusd11gi7bmetbiib.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

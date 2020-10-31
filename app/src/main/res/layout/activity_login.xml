@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/AppTheme"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".LoginActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/iconmath2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/inputlayoutemail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:boxStrokeColor="@android:color/holo_blue_light"
+        app:boxStrokeWidth="@dimen/cardview_default_elevation"
+        app:layout_constraintBottom_toTopOf="@+id/login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView">
+
+        <EditText
+            android:id="@+id/editTextTextEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="email"
+            android:inputType="textEmailAddress"
+            android:textColor="@android:color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/inputlayoutpassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        app:boxBackgroundColor="#FFFFFF"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:boxStrokeColor="@android:color/holo_blue_light"
+        app:boxStrokeWidth="1dp"
+        app:layout_constraintBottom_toTopOf="@id/login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/inputlayoutemail">
+
+        <EditText
+            android:id="@+id/editTextTextPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ems="10"
+            android:hint="password"
+
+            android:inputType="textPassword"
+            android:textColor="@android:color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/login"
+        style="@style/ButtonStyle"
+        android:stateListAnimator="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_blue_light"
+        android:fontFamily="sans-serif-condensed"
+        android:shadowColor="@android:color/transparent"
+        android:text="Login"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/signup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/inputlayoutpassword" />
+
+    <Button
+        android:background="@android:color/holo_blue_light"
+        android:stateListAnimator="@null"
+        android:id="@+id/signup"
+        style="@style/ButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+       android:textColor="@android:color/white"
+        android:elevation="0dp"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:text="Sign up"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login" />
+</androidx.constraintlayout.widget.ConstraintLayout>

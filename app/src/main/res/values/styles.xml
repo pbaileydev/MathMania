@@ -1,0 +1,18 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#bbdefb</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@android:color/holo_blue_light</item>
+        <item name="windowActionBar">false</item>
+    </style>
+    <style name="AppStyleBlue">
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+    <style name="ButtonStyle">
+        <item name="android:textColor">@android:color/holo_blue_light</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+</resources>
