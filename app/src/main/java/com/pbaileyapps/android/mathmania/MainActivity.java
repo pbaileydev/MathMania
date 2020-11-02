@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         final String user_id = getIntent().getStringExtra("USER_ID");
         final String email = getIntent().getStringExtra("EMAIL");
+        TextView emailView = findViewById(R.id.toolbarEmail);
+        emailView.setText(email.substring(0,10));
         TextView signOut = findViewById(R.id.signout);
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override

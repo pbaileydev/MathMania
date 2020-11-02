@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
@@ -28,10 +29,16 @@ public class QuizActivity extends AppCompatActivity {
     private TextView questionView, questionNumView;
     private EditText enterAnswerView;
     private String question;
-    private int limit;
+    private int total;
     private int questionNum;
     private FirebaseDatabase firebaseDatabase;
     private String email;
+    private int highScore;
+    private int highScoreSubtract;
+    private int highScoreMultiply;
+    private int highScoreDivide;
+    private double num;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,9 +47,82 @@ public class QuizActivity extends AppCompatActivity {
         questionView = findViewById(R.id.question_view);
         questionNumView = findViewById(R.id.question_num);
         enterAnswerView = findViewById(R.id.enter_here);
+        total = 0;
         Button submitAnswer = findViewById(R.id.submit);
         firebaseDatabase = FirebaseDatabase.getInstance();
-        limit = 10;
+        DatabaseReference referenceAdd = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Addition");
+        referenceAdd.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.getValue() == null){
+                    highScore = 0;
+                }
+                else {
+                    String string = snapshot.getValue().toString();
+                    highScore = Integer.parseInt(string);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        DatabaseReference referenceSubtract = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Subtract");
+        referenceSubtract.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.getValue() == null){
+                    highScoreSubtract = 0;
+                }
+                else{
+                String string = snapshot.getValue().toString();
+                highScoreSubtract = Integer.parseInt(string);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        DatabaseReference referenceMultiply = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Multiply");
+        referenceMultiply.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.getValue() == null){
+                    highScoreMultiply = 0;
+                }
+                else {
+                String string = snapshot.getValue().toString();
+                highScoreMultiply = Integer.parseInt(string);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        DatabaseReference referenceDivide = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Divide");
+        referenceDivide.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.getValue() == null) {
+                    highScoreDivide = 0;
+                }
+                else {
+                    String string = snapshot.getValue().toString();
+                    highScoreDivide = Integer.parseInt(string);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         pointList = new LinkedList<>();
         Intent intent = getIntent();
         email = intent.getStringExtra("EMAIL");
@@ -64,31 +144,32 @@ public class QuizActivity extends AppCompatActivity {
                         if (answer == c) {
                             Integer i = new Integer(1);
                             pointList.add(i);
-                        } else {
-                            Toast.makeText(QuizActivity.this, "Sorry, that is incorrect", Toast.LENGTH_LONG).show();
-                            pointList.add(new Integer(0));
+                            a = random.nextInt(10);
+                            b = random.nextInt(10);
+                            c = a + b;
+                            question = "" + a + " + " + b;
+                            questionView.setText(question);
+                            enterAnswerView.setText("");
+                            questionNum++;
+                            questionNumView.setText(String.valueOf(questionNum));
                         }
-                        a = random.nextInt(10);
-                        b = random.nextInt(10);
-                        c = a + b;
-                        question = "" + a + " + " + b;
-                        questionView.setText(question);
-                        enterAnswerView.setText("");
-                        questionNum++;
-                        questionNumView.setText(String.valueOf(questionNum));
-                        if (questionNum == limit) {
-                            int total = 0;
-                            String response;
+                        else {
+                            questionView.setText("Game Over");
                             for (int i = 0; i < pointList.size(); i++) {
                                 total += pointList.get(i);
                             }
-                            response = "Your score is " + total + "/10";
-                            HashMap<String,Object> hashMap = new HashMap<>();
-                            hashMap.put("SCORE",String.valueOf(total));
-                            firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Addition").setValue(response);
+                            //Finish
+                            if(total > highScore) {
+                                String response = String.valueOf(total);
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("SCORE", String.valueOf(total));
+                                firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Addition").setValue(response);
+                            }
+                            Toast.makeText(QuizActivity.this, "Sorry, that is incorrect", Toast.LENGTH_LONG).show();
 
-                            questionView.setText(response);
                         }
+
+
                     }
                 });
             } else if (key.equals("Subtract")) {
@@ -103,30 +184,29 @@ public class QuizActivity extends AppCompatActivity {
                         if (answer == c) {
                             Integer i = new Integer(1);
                             pointList.add(i);
+                            a = random.nextInt(10);
+                            b = random.nextInt(10);
+                            c = a - b;
+                            question = "" + a + " - " + b;
+                            questionView.setText(question);
+                            enterAnswerView.setText("");
+                            questionNum++;
+                            questionNumView.setText(String.valueOf(questionNum));
                         } else {
-                            Toast.makeText(QuizActivity.this, "Sorry, that is incorrect", Toast.LENGTH_LONG).show();
-                            pointList.add(new Integer(0));
-                        }
-                        a = random.nextInt(10);
-                        b = random.nextInt(10);
-                        c = a - b;
-                        question = "" + a + " - " + b;
-                        questionView.setText(question);
-                        enterAnswerView.setText("");
-                        questionNum++;
-                        questionNumView.setText(String.valueOf(questionNum));
-                        if (questionNum == limit) {
-                            int total = 0;
-                            String response;
+                            questionView.setText("Game Over");
                             for (int i = 0; i < pointList.size(); i++) {
                                 total += pointList.get(i).intValue();
                             }
-                            response = "Your score is " + total + "/10";
-                            HashMap<String,Object> hashMap = new HashMap<>();
-                            hashMap.put("SCORE",String.valueOf(total));
-                            firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Subtract").setValue(response);
-                            questionView.setText(response);
+                            //Finish
+                            if (total > highScoreSubtract) {
+                                String response = String.valueOf(total);
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("SCORE", String.valueOf(total));
+                                firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Subtract").setValue(response);
+                            }
                         }
+
+
                     }
                 });
             } else if (key.equals("Multiply")) {
@@ -141,72 +221,73 @@ public class QuizActivity extends AppCompatActivity {
                         if (answer == c) {
                             Integer i = new Integer(1);
                             pointList.add(i);
+                            a = random.nextInt(10);
+                            b = random.nextInt(10);
+                            c = a * b;
+                            question = "" + a + " x " + b;
+                            questionView.setText(question);
+                            enterAnswerView.setText("");
+                            questionNum++;
+                            questionNumView.setText(String.valueOf(questionNum));
                         } else {
-                            Toast.makeText(QuizActivity.this, "Sorry, that is incorrect", Toast.LENGTH_LONG).show();
-                            pointList.add(new Integer(0));
-                        }
-                        a = random.nextInt(10);
-                        b = random.nextInt(10);
-                        c = a * b;
-                        question = "" + a + " * " + b;
-                        questionView.setText(question);
-                        enterAnswerView.setText("");
-                        questionNum++;
-                        questionNumView.setText(String.valueOf(questionNum));
-                        if (questionNum == limit) {
-                            int total = 0;
-                            String response;
+                            questionView.setText("Game Over");
                             for (int i = 0; i < pointList.size(); i++) {
                                 total += pointList.get(i).intValue();
                             }
-                            response = "Your score is " + total + "/10";
-                            HashMap<String,Object> hashMap = new HashMap<>();
-                            hashMap.put("SCORE",String.valueOf(total));
-                            firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Multiply").setValue(response);
-                            questionView.setText(response);
+                            //Finish
+                            if (total > highScoreMultiply) {
+                                String response = String.valueOf(total);
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("SCORE", String.valueOf(total));
+                                firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Multiply").setValue(response);
+                            }
                         }
+
+
                     }
                 });
             } else if (key.equals("Divide")) {
+
+                final DecimalFormat format = new DecimalFormat();
+                format.applyPattern("###");
                 x = Math.random() * 10 - 1 + 1;
                 y = Math.random() * 10 - 1 + 1;
                 z = x/y;
-                question = "" + x + " / " + y;
+                num = Double.parseDouble(format.format(z));
+                question = "" + Double.parseDouble(format.format(x)) + " / " + Double.parseDouble(format.format(y));
                 questionView.setText(question);
                 questionNumView.setText(String.valueOf(questionNum));
                 submitAnswer.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         double answer = Double.parseDouble(enterAnswerView.getText().toString());
-                        if (answer == z) {
+                        if (answer == num) {
                             Integer i = new Integer(1);
                             pointList.add(i);
+                            x = Math.random() * 10 - 1 + 1;
+                            y =  Math.random() * 10 - 1 + 1;
+                            z = a / b;
+                            num = Double.parseDouble(format.format(z));
+                            question = "" + Double.parseDouble(format.format(x)) + " / " + Double.parseDouble(format.format(y));
+                            questionView.setText(question);
+                            enterAnswerView.setText("");
+                            questionNum++;
+                            questionNumView.setText(String.valueOf(questionNum));
                         } else {
-                            Toast.makeText(QuizActivity.this, "Sorry, that is incorrect", Toast.LENGTH_LONG).show();
-                            pointList.add(new Integer(0));
-                        }
-                        x = Math.random() * 10 - 1 + 1;
-                        y =  Math.random() * 10 - 1 + 1;
-
-                        z = a / b;
-                        question = "" + x + " / " + y;
-                        questionView.setText(question);
-                        enterAnswerView.setText("");
-                        questionNum++;
-                        questionNumView.setText(String.valueOf(questionNum));
-                        if (questionNum == limit) {
-                            int total = 0;
-                            String response;
+                            questionView.setText("Game Over");
                             for (int i = 0; i < pointList.size(); i++) {
                                 total += pointList.get(i).intValue();
                             }
-                            response = "Your score is " + total + "/10";
-                            HashMap<String,Object> hashMap = new HashMap<>();
-                            hashMap.put("SCORE",String.valueOf(total));
-                            hashMap.put("EMAIL",email);
-                            firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Divide").setValue(response);
-                            questionView.setText(response);
+                            //Finish
+                            if (total > highScoreDivide) {
+                                String response = String.valueOf(total);
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("SCORE", String.valueOf(total));
+                                firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Divide").setValue(response);
+                            }
                         }
+
+
                     }
                 });
             }
