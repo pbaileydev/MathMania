@@ -18,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
@@ -25,7 +26,7 @@ import java.util.Random;
 public class QuizActivity extends AppCompatActivity {
     private LinkedList<Integer> pointList;
     private int a,b,c;
-    private double x,y,z;
+    private int x,y,z;
     private TextView questionView, questionNumView;
     private EditText enterAnswerView;
     private String question;
@@ -250,29 +251,29 @@ public class QuizActivity extends AppCompatActivity {
 
                 final DecimalFormat format = new DecimalFormat();
                 format.applyPattern("###");
-                x = Math.random() * 10 - 1 + 1;
-                y = Math.random() * 10 - 1 + 1;
-                z = x/y;
-                num = Double.parseDouble(format.format(z));
-                question = "" + Double.parseDouble(format.format(x)) + " / " + Double.parseDouble(format.format(y));
+                ArrayList<Integer> linkedList = division();
+                x = linkedList.get(0).intValue();
+                y = linkedList.get(1).intValue();
+                num = x/y;
+                question = x  + " / " + y;
                 questionView.setText(question);
                 questionNumView.setText(String.valueOf(questionNum));
                 submitAnswer.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        double answer = Double.parseDouble(enterAnswerView.getText().toString());
+                        int answer = Integer.parseInt(enterAnswerView.getText().toString());
                         if (answer == num) {
                             Integer i = new Integer(1);
-                            pointList.add(i);
-                            x = Math.random() * 10 - 1 + 1;
-                            y =  Math.random() * 10 - 1 + 1;
-                            z = a / b;
-                            num = Double.parseDouble(format.format(z));
-                            question = "" + Double.parseDouble(format.format(x)) + " / " + Double.parseDouble(format.format(y));
+                            ArrayList<Integer> nlinkedList = division();
+                            x = nlinkedList.get(0);
+                            y = nlinkedList.get(1);
+                            num = x/y;
+                            question = x  + " / " + y;
                             questionView.setText(question);
                             enterAnswerView.setText("");
                             questionNum++;
                             questionNumView.setText(String.valueOf(questionNum));
+                            pointList.add(i);
                         } else {
                             questionView.setText("Game Over");
                             for (int i = 0; i < pointList.size(); i++) {
@@ -300,4 +301,32 @@ public class QuizActivity extends AppCompatActivity {
 
 
     }
+    public ArrayList<Integer> division() {
+        ArrayList<Integer> linkedList = new ArrayList<>();
+        boolean flag = false;
+        int i = 0;
+        while (i == 0) {
+            x = new Random().nextInt(10);
+            y = new Random().nextInt(10);
+            boolean inner = false;
+            int p = 0;
+            if (y == 0) {
+                y = new Random().nextInt(10);
+                flag = false;
+            } else if (x % y != 0) {
+                flag = false;
+            } else if (x % y == 0) {
+                String question = "x" + " / " + y;
+                z = (int) x / y;
+                linkedList.add(Integer.valueOf(x));
+                linkedList.add(Integer.valueOf(y));
+                linkedList.add(Integer.valueOf(z));
+                flag = true;
+                i++;
+            }
+
+        }
+        return linkedList;
+    }
+
 }
