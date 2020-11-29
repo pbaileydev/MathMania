@@ -28,6 +28,7 @@ public class StatsActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private TextView signout;
     private TextView add,subtract,multiply,divide;
+    private String addString, subtractString, multiplyString, divideString;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +37,7 @@ public class StatsActivity extends AppCompatActivity {
         String email = getIntent().getStringExtra("EMAIL");
         Toolbar toolbar = findViewById(R.id.idtoolbar);
         TextView emailView = findViewById(R.id.toolbarEmail);
-        emailView.setText(email.substring(0,10));
+        emailView.setText(email);
         setSupportActionBar(toolbar);
         add = findViewById(R.id.addHighScore);
         subtract = findViewById(R.id.subtractHighScore);
@@ -61,10 +62,12 @@ public class StatsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) {
-                    add.setText(snapshot.getValue().toString());
+                    addString = "Addition: \n" +snapshot.getValue().toString();
+                    add.setText(addString);
                 }
                 else {
-                    add.setText("No high score yet");
+                    addString = "No high score yet";
+                    add.setText(addString);
                 }
             }
 
@@ -77,10 +80,12 @@ public class StatsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) {
-                    subtract.setText(snapshot.getValue().toString());
+                    subtractString = "Subtraction: \n" +snapshot.getValue().toString();
+                    subtract.setText(subtractString);
                 }
                 else {
-                    subtract.setText("No high score yet");
+                    subtractString = "No high score yet";
+                    subtract.setText(subtractString);
                 }
             }
 
@@ -93,10 +98,12 @@ public class StatsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) {
-                    multiply.setText(snapshot.getValue().toString());
+                    multiplyString = "Multiplication: \n" +snapshot.getValue().toString();
+                    multiply.setText(multiplyString);
                 }
                 else {
-                    multiply.setText("No high score yet");
+                    multiplyString = "No high score yet";
+                    multiply.setText(multiplyString);
                 }
             }
 
@@ -109,10 +116,12 @@ public class StatsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) {
-                    divide.setText(snapshot.getValue().toString());
+                    divideString = "Division: \n" +snapshot.getValue().toString();
+                    divide.setText(divideString);
                 }
                 else {
-                    divide.setText("No high score yet");
+                    divideString = "No high score yet";
+                    divide.setText(divideString);
                 }
             }
 
@@ -121,6 +130,10 @@ public class StatsActivity extends AppCompatActivity {
 
             }
         });
+
+
+
+
 
     }
 }

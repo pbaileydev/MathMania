@@ -37,38 +37,9 @@ public class LoginActivity extends AppCompatActivity {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String emailString = email.getText().toString();
-                String passwordString = password.getText().toString();
-                firebaseDatabase = FirebaseDatabase.getInstance();
-                if(emailString.isEmpty() || passwordString.isEmpty()){
-                    Toast.makeText(LoginActivity.this,"Please enter in your email and password to sign up",Toast.LENGTH_LONG).show();
-                }
-                else{
-                    firebaseAuth.createUserWithEmailAndPassword(emailString,passwordString).addOnCompleteListener(
-                            new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if(task.isSuccessful()){
-                                        //register user in database
-                                        Toast.makeText(LoginActivity.this,"User registered",Toast.LENGTH_LONG).show();
-                                        String keyId = firebaseAuth.getUid();
-                                        assert keyId != null;
-                                        HashMap<String, Object> hashMap = new HashMap<>();
-                                        hashMap.put("Score", "None");
-                                        firebaseDatabase.getReference().child(keyId).child("Email").setValue(emailString);
-
-
-                                    }
-                                    else{
-                                        task.getException().printStackTrace();
-                                        Toast.makeText(LoginActivity.this,"User not registered",Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            }
-                    );
-                }
-            }
-        });
+                Intent i = new Intent(LoginActivity.this,SignupActivity.class);
+                startActivity(i);
+        }});
 
 
         login.setOnClickListener(new View.OnClickListener() {

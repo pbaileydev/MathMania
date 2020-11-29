@@ -5,6 +5,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
         private ArrayList<String> arrayList;
         private FirebaseAuth auth;
+        private AlarmManager manager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         final String user_id = getIntent().getStringExtra("USER_ID");
         final String email = getIntent().getStringExtra("EMAIL");
         TextView emailView = findViewById(R.id.toolbarEmail);
-        emailView.setText(email.substring(0,10));
+        emailView.setText(email);
         TextView signOut = findViewById(R.id.signout);
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override

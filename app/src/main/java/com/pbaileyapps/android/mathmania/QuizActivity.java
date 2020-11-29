@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,12 +27,14 @@ import java.util.Random;
 
 public class QuizActivity extends AppCompatActivity {
     private LinkedList<Integer> pointList;
-    private int a,b,c;
+    private int a,b,c,d;
     private int x,y,z;
-    private TextView questionView, questionNumView;
-    private EditText enterAnswerView;
+    private Random random;
+    private TextView questionView, questionNumView, enterAnswerView;
+    private RadioGroup group;
+    private RadioButton one,two;
     private String question;
-    private int total;
+    private int total, currentScore;
     private int questionNum;
     private FirebaseDatabase firebaseDatabase;
     private String email;
@@ -38,6 +42,7 @@ public class QuizActivity extends AppCompatActivity {
     private int highScoreSubtract;
     private int highScoreMultiply;
     private int highScoreDivide;
+    private ArrayList<Integer> linkedList;
     private double num;
 
     @Override
@@ -46,10 +51,11 @@ public class QuizActivity extends AppCompatActivity {
         setContentView(R.layout.activity_quiz);
         final String user_id = getIntent().getStringExtra("USER_ID");
         questionView = findViewById(R.id.question_view);
-        questionNumView = findViewById(R.id.question_num);
-        enterAnswerView = findViewById(R.id.enter_here);
+        group = findViewById(R.id.radio_group);
+        one = findViewById(R.id.option_one);
+        two = findViewById(R.id.option_two);
+        random = new Random();
         total = 0;
-        Button submitAnswer = findViewById(R.id.submit);
         firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference referenceAdd = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Addition");
         referenceAdd.addValueEventListener(new ValueEventListener() {
@@ -69,7 +75,7 @@ public class QuizActivity extends AppCompatActivity {
 
             }
         });
-        DatabaseReference referenceSubtract = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Subtract");
+        DatabaseReference referenceSubtract = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Subtraction");
         referenceSubtract.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -106,7 +112,7 @@ public class QuizActivity extends AppCompatActivity {
 
             }
         });
-        DatabaseReference referenceDivide = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Divide");
+        DatabaseReference referenceDivide = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Division");
         referenceDivide.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -129,166 +135,376 @@ public class QuizActivity extends AppCompatActivity {
         email = intent.getStringExtra("EMAIL");
         try {
             final String key = intent.getExtras().getString("QUIZ");
-            final Random random = new Random();
             questionNum = 0;
-            a = random.nextInt(10);
-            b = random.nextInt(10);
+
             if (key.equals("Add")) {
+                currentScore = 0;
+                a = random.nextInt(10) + 1;
+                b = random.nextInt(10) + 1;
                 c = a + b;
-                question = "" + a + " + " + b;
+                question = String.valueOf(a) + "+" + String.valueOf(b);
                 questionView.setText(question);
-                questionNumView.setText(String.valueOf(questionNum));
-                submitAnswer.setOnClickListener(new View.OnClickListener() {
+                d = random.nextInt(2) + 1;
+                //Assign values to radio buttons
+                if(d == 1){
+                    one.setText(String.valueOf(c));
+                    two.setText(String.valueOf(random.nextInt(10)+1));
+
+                }
+                else{
+                    one.setText(String.valueOf(random.nextInt(10)+1));
+                    two.setText(String.valueOf(c));
+                }
+
+                group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
-                    public void onClick(View v) {
-                        int answer = Integer.parseInt(enterAnswerView.getText().toString());
-                        if (answer == c) {
-                            Integer i = new Integer(1);
-                            pointList.add(i);
-                            a = random.nextInt(10);
-                            b = random.nextInt(10);
-                            c = a + b;
-                            question = "" + a + " + " + b;
-                            questionView.setText(question);
-                            enterAnswerView.setText("");
-                            questionNum++;
-                            questionNumView.setText(String.valueOf(questionNum));
-                        }
-                        else {
-                            questionView.setText("Game Over");
-                            for (int i = 0; i < pointList.size(); i++) {
-                                total += pointList.get(i);
+                    public void onCheckedChanged(RadioGroup buttonView, int checkedId) {
+                        //if first answer is correct answer
+                        if (d == 1) {
+                            //if you chose first answer(correct)
+                            if (buttonView.getCheckedRadioButtonId() == one.getId()) {
+                                //add point and update for next question
+                                currentScore++;
+                                a = random.nextInt(10) + 1;
+                                b = random.nextInt(10) + 1;
+                                d = random.nextInt(2) + 1;
+                                group.clearCheck();
+                                c = a + b;
+                                if (d == 1){
+                                    one.setText(String.valueOf(c));
+                                    two.setText(String.valueOf(random.nextInt(10)));
+                                }
+                                else{
+                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(c));
+                                }
+
+                                question = a + "+" + b;
+                                questionView.setText(question);
                             }
-                            //Finish
-                            if(total > highScore) {
-                                String response = String.valueOf(total);
-                                HashMap<String, Object> hashMap = new HashMap<>();
-                                hashMap.put("SCORE", String.valueOf(total));
-                                firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Addition").setValue(response);
+                            //Game Over
+                            else {
+                                questionView.setText("Game Over");
+                                    if(currentScore > highScore) {
+                                        HashMap<String, Object> hashMap = new HashMap<>();
+                                        hashMap.put("SCORE", String.valueOf(currentScore));
+                                        firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Addition").setValue(currentScore);
+                                    }
+
+                                }
                             }
-                            Toast.makeText(QuizActivity.this, "Sorry, that is incorrect", Toast.LENGTH_LONG).show();
+                        //if second button is the correct one
+                        else{
+                            //if you chose the second button(correct)
+                            if (buttonView.getCheckedRadioButtonId() == two.getId()) {
+                                //update next question
+                                currentScore++;
+                                a = random.nextInt(10) + 1;
+                                b = random.nextInt(10) + 1;
+                                c = a + b;
+                                d = random.nextInt(2) + 1;
+                                group.clearCheck();
+                                if (d == 1){
+                                    one.setText(String.valueOf(c));
+                                    two.setText(String.valueOf(random.nextInt(10)));
+                                }
+                                else{
+                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(c));
+                                }
+                                question = a + "+" + b;
+                                questionView.setText(question);
+                            } else {
+                                questionView.setText("Game Over");
+                                    if(currentScore > highScore) {
+                                        HashMap<String, Object> hashMap = new HashMap<>();
+                                        hashMap.put("SCORE", String.valueOf(currentScore));
+                                        firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Addition").setValue(currentScore);
+                                    }
+
+                                }
 
                         }
-
-
                     }
                 });
-            } else if (key.equals("Subtract")) {
+            }
+            else if (key.equals("Subtract")) {
+                currentScore = 0;
+                a = random.nextInt(10) + 1;
+                b = random.nextInt(10) + 1;
                 c = a - b;
-                question = "" + a + " - " + b;
+                question = String.valueOf(a) + "-" + String.valueOf(b);
                 questionView.setText(question);
-                questionNumView.setText(String.valueOf(questionNum));
-                submitAnswer.setOnClickListener(new View.OnClickListener() {
+                d = random.nextInt(2) + 1;
+                //Assign values to radio buttons
+                if(d == 1){
+                    one.setText(String.valueOf(c));
+                    two.setText(String.valueOf(random.nextInt(10)+1));
+
+                }
+                else{
+                    one.setText(String.valueOf(random.nextInt(10)+1));
+                    two.setText(String.valueOf(c));
+                }
+
+                group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
-                    public void onClick(View v) {
-                        int answer = Integer.parseInt(enterAnswerView.getText().toString());
-                        if (answer == c) {
-                            Integer i = new Integer(1);
-                            pointList.add(i);
-                            a = random.nextInt(10);
-                            b = random.nextInt(10);
-                            c = a - b;
-                            question = "" + a + " - " + b;
-                            questionView.setText(question);
-                            enterAnswerView.setText("");
-                            questionNum++;
-                            questionNumView.setText(String.valueOf(questionNum));
-                        } else {
-                            questionView.setText("Game Over");
-                            for (int i = 0; i < pointList.size(); i++) {
-                                total += pointList.get(i).intValue();
+                    public void onCheckedChanged(RadioGroup buttonView, int checkedId) {
+                        //if first answer is correct answer
+                        if (d == 1) {
+                            //if you chose first answer(correct)
+                            if (buttonView.getCheckedRadioButtonId() == one.getId()) {
+                                //add point and update for next question
+                                currentScore++;
+                                a = random.nextInt(10) + 1;
+                                b = random.nextInt(10) + 1;
+                                d = random.nextInt(2) + 1;
+                                group.clearCheck();
+                                c = a - b;
+                                if (d == 1){
+                                    one.setText(String.valueOf(c));
+                                    two.setText(String.valueOf(random.nextInt(10)));
+                                }
+                                else{
+                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(c));
+                                }
+
+                                question = a + "-" + b;
+                                questionView.setText(question);
                             }
-                            //Finish
-                            if (total > highScoreSubtract) {
-                                String response = String.valueOf(total);
-                                HashMap<String, Object> hashMap = new HashMap<>();
-                                hashMap.put("SCORE", String.valueOf(total));
-                                firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Subtract").setValue(response);
+                            //Game Over
+                            else {
+                                questionView.setText("Game Over");
+                                if(currentScore > highScoreSubtract) {
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+                                    hashMap.put("SCORE", String.valueOf(currentScore));
+                                    firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Subtraction").setValue(currentScore);
+                                }
+
                             }
                         }
+                        //if second button is the correct one
+                        else{
+                            //if you chose the second button(correct)
+                            if (buttonView.getCheckedRadioButtonId() == two.getId()) {
+                                //update next question
+                                currentScore++;
+                                a = random.nextInt(10) + 1;
+                                b = random.nextInt(10) + 1;
+                                c = a - b;
+                                d = random.nextInt(2) + 1;
+                                group.clearCheck();
+                                if (d == 1){
+                                    one.setText(String.valueOf(c));
+                                    two.setText(String.valueOf(random.nextInt(10)));
+                                }
+                                else{
+                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(c));
+                                }
+                                question = a + "-" + b;
+                                questionView.setText(question);
+                            } else {
+                                questionView.setText("Game Over");
+                                if(currentScore > highScoreSubtract) {
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+                                    hashMap.put("SCORE", String.valueOf(currentScore));
+                                    firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Subtraction").setValue(currentScore);
+                                }
 
+                            }
 
+                        }
                     }
                 });
-            } else if (key.equals("Multiply")) {
+
+            }
+            else if(key.equals("Multiply")){
+                currentScore = 0;
+                a = random.nextInt(10) + 1;
+                b = random.nextInt(10) + 1;
                 c = a * b;
-                question = "" + a + " x " + b;
+                question = String.valueOf(a) + "x" + String.valueOf(b);
                 questionView.setText(question);
-                questionNumView.setText(String.valueOf(questionNum));
-                submitAnswer.setOnClickListener(new View.OnClickListener() {
+                d = random.nextInt(2) + 1;
+                //Assign values to radio buttons
+                if(d == 1){
+                    one.setText(String.valueOf(c));
+                    two.setText(String.valueOf(random.nextInt(10)+1));
+
+                }
+                else{
+                    one.setText(String.valueOf(random.nextInt(10)+1));
+                    two.setText(String.valueOf(c));
+                }
+
+                group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
-                    public void onClick(View v) {
-                        int answer = Integer.parseInt(enterAnswerView.getText().toString());
-                        if (answer == c) {
-                            Integer i = new Integer(1);
-                            pointList.add(i);
-                            a = random.nextInt(10);
-                            b = random.nextInt(10);
-                            c = a * b;
-                            question = "" + a + " x " + b;
-                            questionView.setText(question);
-                            enterAnswerView.setText("");
-                            questionNum++;
-                            questionNumView.setText(String.valueOf(questionNum));
-                        } else {
-                            questionView.setText("Game Over");
-                            for (int i = 0; i < pointList.size(); i++) {
-                                total += pointList.get(i).intValue();
+                    public void onCheckedChanged(RadioGroup buttonView, int checkedId) {
+                        //if first answer is correct answer
+                        if (d == 1) {
+                            //if you chose first answer(correct)
+                            if (buttonView.getCheckedRadioButtonId() == one.getId()) {
+                                //add point and update for next question
+                                currentScore++;
+                                a = random.nextInt(10) + 1;
+                                b = random.nextInt(10) + 1;
+                                d = random.nextInt(2) + 1;
+                                group.clearCheck();
+                                c = a * b;
+                                if (d == 1){
+                                    one.setText(String.valueOf(c));
+                                    two.setText(String.valueOf(random.nextInt(10)));
+                                }
+                                else{
+                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(c));
+                                }
+
+                                question = a + "x" + b;
+                                questionView.setText(question);
                             }
-                            //Finish
-                            if (total > highScoreMultiply) {
-                                String response = String.valueOf(total);
-                                HashMap<String, Object> hashMap = new HashMap<>();
-                                hashMap.put("SCORE", String.valueOf(total));
-                                firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Multiply").setValue(response);
+                            //Game Over
+                            else {
+                                questionView.setText("Game Over");
+                                if(currentScore > highScore) {
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+                                    hashMap.put("SCORE", String.valueOf(currentScore));
+                                    firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Multiplication").setValue(currentScore);
+                                }
+
                             }
                         }
+                        //if second button is the correct one
+                        else{
+                            //if you chose the second button(correct)
+                            if (buttonView.getCheckedRadioButtonId() == two.getId()) {
+                                //update next question
+                                currentScore++;
+                                a = random.nextInt(10) + 1;
+                                b = random.nextInt(10) + 1;
+                                c = a * b;
+                                d = random.nextInt(2) + 1;
+                                group.clearCheck();
+                                if (d == 1){
+                                    one.setText(String.valueOf(c));
+                                    two.setText(String.valueOf(random.nextInt(10)));
+                                }
+                                else{
+                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(c));
+                                }
+                                question = a + "x" + b;
+                                questionView.setText(question);
+                            } else {
+                                questionView.setText("Game Over");
+                                if(currentScore > highScore) {
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+                                    hashMap.put("SCORE", String.valueOf(currentScore));
+                                    firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Multiplication").setValue(currentScore);
+                                }
 
+                            }
 
+                        }
                     }
                 });
-            } else if (key.equals("Divide")) {
+            }
+            else if (key.equals("Divide")) {
 
                 final DecimalFormat format = new DecimalFormat();
                 format.applyPattern("###");
-                ArrayList<Integer> linkedList = division();
-                x = linkedList.get(0).intValue();
-                y = linkedList.get(1).intValue();
-                num = x/y;
-                question = x  + " / " + y;
+                linkedList = division();
+                currentScore = 0;
+                a = linkedList.get(0);
+                b = linkedList.get(1);
+                c = a / b;
+                question = String.valueOf(a) + "/" + String.valueOf(b);
                 questionView.setText(question);
-                questionNumView.setText(String.valueOf(questionNum));
-                submitAnswer.setOnClickListener(new View.OnClickListener() {
+                d = random.nextInt(2) + 1;
+                //Assign values to radio buttons
+                if(d == 1){
+                    one.setText(String.valueOf(c));
+                    two.setText(String.valueOf(random.nextInt(10)+1));
+
+                }
+                else{
+                    one.setText(String.valueOf(random.nextInt(10)+1));
+                    two.setText(String.valueOf(c));
+                }
+
+                group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
-                    public void onClick(View v) {
-                        int answer = Integer.parseInt(enterAnswerView.getText().toString());
-                        if (answer == num) {
-                            Integer i = new Integer(1);
-                            ArrayList<Integer> nlinkedList = division();
-                            x = nlinkedList.get(0);
-                            y = nlinkedList.get(1);
-                            num = x/y;
-                            question = x  + " / " + y;
-                            questionView.setText(question);
-                            enterAnswerView.setText("");
-                            questionNum++;
-                            questionNumView.setText(String.valueOf(questionNum));
-                            pointList.add(i);
-                        } else {
-                            questionView.setText("Game Over");
-                            for (int i = 0; i < pointList.size(); i++) {
-                                total += pointList.get(i).intValue();
+                    public void onCheckedChanged(RadioGroup buttonView, int checkedId) {
+                        //if first answer is correct answer
+                        if (d == 1) {
+                            //if you chose first answer(correct)
+                            if (buttonView.getCheckedRadioButtonId() == one.getId()) {
+                                //add point and update for next question
+                                currentScore++;
+                                linkedList = division();
+                                a = linkedList.get(0);
+                                b = linkedList.get(1);
+                                d = random.nextInt(2) + 1;
+                                group.clearCheck();
+                                c = a / b;
+                                if (d == 1){
+                                    one.setText(String.valueOf(c));
+                                    two.setText(String.valueOf(random.nextInt(10)));
+                                }
+                                else{
+                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(c));
+                                }
+
+                                question = a + "/" + b;
+                                questionView.setText(question);
                             }
-                            //Finish
-                            if (total > highScoreDivide) {
-                                String response = String.valueOf(total);
-                                HashMap<String, Object> hashMap = new HashMap<>();
-                                hashMap.put("SCORE", String.valueOf(total));
-                                firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Divide").setValue(response);
+                            //Game Over
+                            else {
+                                questionView.setText("Game Over");
+                                if(currentScore > highScoreDivide) {
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+                                    hashMap.put("SCORE", String.valueOf(currentScore));
+                                    firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Division").setValue(currentScore);
+                                }
+
                             }
                         }
+                        //if second button is the correct one
+                        else{
+                            //if you chose the second button(correct)
+                            if (buttonView.getCheckedRadioButtonId() == two.getId()) {
+                                //update next question
+                                currentScore++;
+                                linkedList = division();
+                                a = linkedList.get(0);
+                                b = linkedList.get(1);
+                                c = a / b;
+                                d = random.nextInt(2) + 1;
+                                group.clearCheck();
+                                if (d == 1){
+                                    one.setText(String.valueOf(c));
+                                    two.setText(String.valueOf(random.nextInt(10)));
+                                }
+                                else{
+                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(c));
+                                }
+                                question = a + "/" + b;
+                                questionView.setText(question);
+                            } else {
+                                questionView.setText("Game Over");
+                                if(currentScore > highScoreDivide) {
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+                                    hashMap.put("SCORE", String.valueOf(currentScore));
+                                    firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Division").setValue(currentScore);
+                                }
 
+                            }
 
+                        }
                     }
                 });
             }
