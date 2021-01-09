@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-        private ArrayList<String> arrayList;
+        private ArrayList<String> arrayList, signList;
         private FirebaseAuth auth;
         private AlarmManager manager;
     @Override
@@ -57,7 +57,13 @@ public class MainActivity extends AppCompatActivity {
         arrayList.add("Subtraction");
         arrayList.add("Multiplication");
         arrayList.add("Division");
+        signList = new ArrayList<>();
+        signList.add("+");
+        signList.add("-");
+        signList.add("x");
+        signList.add("/");
         adapter.setSubjectList(arrayList);
+        adapter.setSignList(signList);
         adapter.setSelectorInstance(new MathAdapter.subjectSelector() {
             Intent i = new Intent(MainActivity.this,QuizActivity.class);
             @Override

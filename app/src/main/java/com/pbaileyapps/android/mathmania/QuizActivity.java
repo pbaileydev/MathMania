@@ -2,14 +2,20 @@ package com.pbaileyapps.android.mathmania;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,18 +33,22 @@ import java.util.Random;
 
 public class QuizActivity extends AppCompatActivity {
     private LinkedList<Integer> pointList;
-    private int a,b,c,d;
+    private RelativeLayout relativeLayout;
+    private ConstraintLayout cardView;
+    private int a,b,c,d,e;
     private int x,y,z;
     private Random random;
+    private CardView realCardView;
     private TextView questionView, questionNumView, enterAnswerView;
     private RadioGroup group;
+    private ImageButton restartButton;
     private RadioButton one,two;
     private String question;
     private int total, currentScore;
     private int questionNum;
     private FirebaseDatabase firebaseDatabase;
     private String email;
-    private int highScore;
+    private int highScore, leaderBoardAdd;
     private int highScoreSubtract;
     private int highScoreMultiply;
     private int highScoreDivide;
@@ -50,6 +60,9 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
         final String user_id = getIntent().getStringExtra("USER_ID");
+        relativeLayout = findViewById(R.id.relative_layout);
+        realCardView = findViewById(R.id.quiz_card);
+        cardView = findViewById(R.id.constraint);
         questionView = findViewById(R.id.question_view);
         group = findViewById(R.id.radio_group);
         one = findViewById(R.id.option_one);
@@ -130,6 +143,7 @@ public class QuizActivity extends AppCompatActivity {
 
             }
         });
+
         pointList = new LinkedList<>();
         Intent intent = getIntent();
         email = intent.getStringExtra("EMAIL");
@@ -145,14 +159,18 @@ public class QuizActivity extends AppCompatActivity {
                 question = String.valueOf(a) + "+" + String.valueOf(b);
                 questionView.setText(question);
                 d = random.nextInt(2) + 1;
+                e = random.nextInt(10) + 1;
+                if (e == c){
+                    e = c + random.nextInt(3) + 1;
+                }
                 //Assign values to radio buttons
                 if(d == 1){
                     one.setText(String.valueOf(c));
-                    two.setText(String.valueOf(random.nextInt(10)+1));
+                    two.setText(String.valueOf(e));
 
                 }
                 else{
-                    one.setText(String.valueOf(random.nextInt(10)+1));
+                    one.setText(String.valueOf(e));
                     two.setText(String.valueOf(c));
                 }
 
@@ -167,24 +185,54 @@ public class QuizActivity extends AppCompatActivity {
                                 currentScore++;
                                 a = random.nextInt(10) + 1;
                                 b = random.nextInt(10) + 1;
-                                d = random.nextInt(2) + 1;
-                                group.clearCheck();
                                 c = a + b;
+                                d = random.nextInt(2) + 1;
+                                e = random.nextInt(10) + 1;
+                                if (e == c){
+                                    e = c + random.nextInt(3) + 1;
+                                }
+                                group.clearCheck();
+
+
                                 if (d == 1){
                                     one.setText(String.valueOf(c));
-                                    two.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(e));
                                 }
                                 else{
-                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    one.setText(String.valueOf(e));
                                     two.setText(String.valueOf(c));
                                 }
 
                                 question = a + "+" + b;
                                 questionView.setText(question);
+                                one.setVisibility(View.VISIBLE);
+                                two.setVisibility(View.VISIBLE);
+                                restartButton.setVisibility(View.INVISIBLE);
                             }
                             //Game Over
                             else {
                                 questionView.setText("Game Over");
+                                restartButton = new ImageButton(QuizActivity.this);
+                                restartButton.setBackgroundResource(R.drawable.rings);
+                                restartButton.setImageResource(R.drawable.ic_baseline_autorenew_24);
+                                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                                ConstraintLayout.LayoutParams oldParams = (ConstraintLayout.LayoutParams) questionView.getLayoutParams();
+                                layoutParams.topToBottom = questionView.getId();
+                                layoutParams.startToStart = questionView.getId();
+                                layoutParams.endToEnd = questionView.getId();
+                                restartButton.setLayoutParams(layoutParams);
+                                restartButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent nextIntent = new Intent(QuizActivity.this,QuizActivity.class);
+                                        nextIntent.putExtra("QUIZ","Add");
+                                        nextIntent.putExtra("USER_ID",user_id);
+                                        QuizActivity.this.startActivity(nextIntent);
+                                    }
+                                });
+                                cardView.addView(restartButton);
+                                one.setVisibility(View.INVISIBLE);
+                                two.setVisibility(View.INVISIBLE);
                                     if(currentScore > highScore) {
                                         HashMap<String, Object> hashMap = new HashMap<>();
                                         hashMap.put("SCORE", String.valueOf(currentScore));
@@ -203,19 +251,47 @@ public class QuizActivity extends AppCompatActivity {
                                 b = random.nextInt(10) + 1;
                                 c = a + b;
                                 d = random.nextInt(2) + 1;
+                                e = random.nextInt(10) + 1;
+                                if (e == c){
+                                    e = c + random.nextInt(3) + 1;
+                                }
                                 group.clearCheck();
                                 if (d == 1){
                                     one.setText(String.valueOf(c));
-                                    two.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(e));
                                 }
                                 else{
-                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    one.setText(String.valueOf(e));
                                     two.setText(String.valueOf(c));
                                 }
                                 question = a + "+" + b;
                                 questionView.setText(question);
+                                one.setVisibility(View.VISIBLE);
+                                two.setVisibility(View.VISIBLE);
+                                restartButton.setVisibility(View.INVISIBLE);
                             } else {
                                 questionView.setText("Game Over");
+                                restartButton = new ImageButton(QuizActivity.this);
+                                restartButton.setBackgroundResource(R.drawable.rings);
+                                restartButton.setImageResource(R.drawable.ic_baseline_autorenew_24);
+                                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                                ConstraintLayout.LayoutParams oldParams = (ConstraintLayout.LayoutParams) questionView.getLayoutParams();
+                                layoutParams.topToBottom = questionView.getId();
+                                layoutParams.startToStart = questionView.getId();
+                                layoutParams.endToEnd = questionView.getId();
+                                restartButton.setLayoutParams(layoutParams);
+                                restartButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent nextIntent = new Intent(QuizActivity.this,QuizActivity.class);
+                                        nextIntent.putExtra("QUIZ","Add");
+                                        nextIntent.putExtra("USER_ID",user_id);
+                                        QuizActivity.this.startActivity(nextIntent);
+                                    }
+                                });
+                                cardView.addView(restartButton);
+                                one.setVisibility(View.INVISIBLE);
+                                two.setVisibility(View.INVISIBLE);
                                     if(currentScore > highScore) {
                                         HashMap<String, Object> hashMap = new HashMap<>();
                                         hashMap.put("SCORE", String.valueOf(currentScore));
@@ -236,14 +312,18 @@ public class QuizActivity extends AppCompatActivity {
                 question = String.valueOf(a) + "-" + String.valueOf(b);
                 questionView.setText(question);
                 d = random.nextInt(2) + 1;
+                e = random.nextInt(10) + 1;
+                if (e == c){
+                    e = c + random.nextInt(3) + 1;
+                }
                 //Assign values to radio buttons
                 if(d == 1){
                     one.setText(String.valueOf(c));
-                    two.setText(String.valueOf(random.nextInt(10)+1));
+                    two.setText(String.valueOf(e));
 
                 }
                 else{
-                    one.setText(String.valueOf(random.nextInt(10)+1));
+                    one.setText(String.valueOf(e));
                     two.setText(String.valueOf(c));
                 }
 
@@ -261,21 +341,50 @@ public class QuizActivity extends AppCompatActivity {
                                 d = random.nextInt(2) + 1;
                                 group.clearCheck();
                                 c = a - b;
+                                e = random.nextInt(10) + 1;
+                                if (e == c){
+                                    e = c + random.nextInt(3) + 1;
+                                }
                                 if (d == 1){
                                     one.setText(String.valueOf(c));
-                                    two.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(e));
                                 }
                                 else{
-                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    one.setText(String.valueOf(e));
                                     two.setText(String.valueOf(c));
                                 }
 
                                 question = a + "-" + b;
                                 questionView.setText(question);
+                                one.setVisibility(View.VISIBLE);
+                                two.setVisibility(View.VISIBLE);
+                                restartButton.setVisibility(View.INVISIBLE);
+
                             }
                             //Game Over
                             else {
                                 questionView.setText("Game Over");
+                                restartButton = new ImageButton(QuizActivity.this);
+                                restartButton.setBackgroundResource(R.drawable.rings);
+                                restartButton.setImageResource(R.drawable.ic_baseline_autorenew_24);
+                                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                                ConstraintLayout.LayoutParams oldParams = (ConstraintLayout.LayoutParams) questionView.getLayoutParams();
+                                layoutParams.topToBottom = questionView.getId();
+                                layoutParams.startToStart = questionView.getId();
+                                layoutParams.endToEnd = questionView.getId();
+                                restartButton.setLayoutParams(layoutParams);
+                                restartButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent nextIntent = new Intent(QuizActivity.this,QuizActivity.class);
+                                        nextIntent.putExtra("QUIZ","Subtract");
+                                        nextIntent.putExtra("USER_ID",user_id);
+                                        QuizActivity.this.startActivity(nextIntent);
+                                    }
+                                });
+                                cardView.addView(restartButton);
+                                one.setVisibility(View.INVISIBLE);
+                                two.setVisibility(View.INVISIBLE);
                                 if(currentScore > highScoreSubtract) {
                                     HashMap<String, Object> hashMap = new HashMap<>();
                                     hashMap.put("SCORE", String.valueOf(currentScore));
@@ -294,19 +403,48 @@ public class QuizActivity extends AppCompatActivity {
                                 b = random.nextInt(10) + 1;
                                 c = a - b;
                                 d = random.nextInt(2) + 1;
+                                e = random.nextInt(10) + 1;
+                                if (e == c){
+                                    e = c + random.nextInt(3) + 1;
+                                }
                                 group.clearCheck();
                                 if (d == 1){
                                     one.setText(String.valueOf(c));
-                                    two.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(e));
                                 }
                                 else{
-                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    one.setText(String.valueOf(e));
                                     two.setText(String.valueOf(c));
                                 }
                                 question = a + "-" + b;
                                 questionView.setText(question);
+                                one.setVisibility(View.VISIBLE);
+                                two.setVisibility(View.VISIBLE);
+                                restartButton.setVisibility(View.INVISIBLE);
+
                             } else {
                                 questionView.setText("Game Over");
+                                restartButton = new ImageButton(QuizActivity.this);
+                                restartButton.setBackgroundResource(R.drawable.rings);
+                                restartButton.setImageResource(R.drawable.ic_baseline_autorenew_24);
+                                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                                ConstraintLayout.LayoutParams oldParams = (ConstraintLayout.LayoutParams) questionView.getLayoutParams();
+                                layoutParams.topToBottom = questionView.getId();
+                                layoutParams.startToStart = questionView.getId();
+                                layoutParams.endToEnd = questionView.getId();
+                                restartButton.setLayoutParams(layoutParams);
+                                restartButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent nextIntent = new Intent(QuizActivity.this,QuizActivity.class);
+                                        nextIntent.putExtra("QUIZ","Subtract");
+                                        nextIntent.putExtra("USER_ID",user_id);
+                                        QuizActivity.this.startActivity(nextIntent);
+                                    }
+                                });
+                                cardView.addView(restartButton);
+                                one.setVisibility(View.INVISIBLE);
+                                two.setVisibility(View.INVISIBLE);
                                 if(currentScore > highScoreSubtract) {
                                     HashMap<String, Object> hashMap = new HashMap<>();
                                     hashMap.put("SCORE", String.valueOf(currentScore));
@@ -328,14 +466,18 @@ public class QuizActivity extends AppCompatActivity {
                 question = String.valueOf(a) + "x" + String.valueOf(b);
                 questionView.setText(question);
                 d = random.nextInt(2) + 1;
+                e = random.nextInt(10) + 1;
+                if (e == c){
+                    e = c + random.nextInt(3) + 1;
+                }
                 //Assign values to radio buttons
                 if(d == 1){
                     one.setText(String.valueOf(c));
-                    two.setText(String.valueOf(random.nextInt(10)+1));
+                    two.setText(String.valueOf(e));
 
                 }
                 else{
-                    one.setText(String.valueOf(random.nextInt(10)+1));
+                    one.setText(String.valueOf(e));
                     two.setText(String.valueOf(c));
                 }
 
@@ -353,21 +495,50 @@ public class QuizActivity extends AppCompatActivity {
                                 d = random.nextInt(2) + 1;
                                 group.clearCheck();
                                 c = a * b;
+                                e = random.nextInt(10) + 1;
+                                if (e == c){
+                                    e = c + random.nextInt(3) + 1;
+                                }
                                 if (d == 1){
                                     one.setText(String.valueOf(c));
-                                    two.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(e));
                                 }
                                 else{
-                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    one.setText(String.valueOf(e));
                                     two.setText(String.valueOf(c));
                                 }
 
                                 question = a + "x" + b;
                                 questionView.setText(question);
+                                one.setVisibility(View.VISIBLE);
+                                two.setVisibility(View.VISIBLE);
+                                restartButton.setVisibility(View.INVISIBLE);
+
                             }
                             //Game Over
                             else {
                                 questionView.setText("Game Over");
+                                restartButton = new ImageButton(QuizActivity.this);
+                                restartButton.setBackgroundResource(R.drawable.rings);
+                                restartButton.setImageResource(R.drawable.ic_baseline_autorenew_24);
+                                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                                ConstraintLayout.LayoutParams oldParams = (ConstraintLayout.LayoutParams) questionView.getLayoutParams();
+                                layoutParams.topToBottom = questionView.getId();
+                                layoutParams.startToStart = questionView.getId();
+                                layoutParams.endToEnd = questionView.getId();
+                                restartButton.setLayoutParams(layoutParams);
+                                restartButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent nextIntent = new Intent(QuizActivity.this,QuizActivity.class);
+                                        nextIntent.putExtra("QUIZ","Multiply");
+                                        nextIntent.putExtra("USER_ID",user_id);
+                                        QuizActivity.this.startActivity(nextIntent);
+                                    }
+                                });
+                                cardView.addView(restartButton);
+                                one.setVisibility(View.INVISIBLE);
+                                two.setVisibility(View.INVISIBLE);
                                 if(currentScore > highScore) {
                                     HashMap<String, Object> hashMap = new HashMap<>();
                                     hashMap.put("SCORE", String.valueOf(currentScore));
@@ -386,19 +557,48 @@ public class QuizActivity extends AppCompatActivity {
                                 b = random.nextInt(10) + 1;
                                 c = a * b;
                                 d = random.nextInt(2) + 1;
+                                e = random.nextInt(10) + 1;
+                                if (e == c){
+                                    e = c + random.nextInt(3) + 1;
+                                }
                                 group.clearCheck();
                                 if (d == 1){
                                     one.setText(String.valueOf(c));
-                                    two.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(e));
                                 }
                                 else{
-                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    one.setText(String.valueOf(e));
                                     two.setText(String.valueOf(c));
                                 }
                                 question = a + "x" + b;
                                 questionView.setText(question);
+                                one.setVisibility(View.VISIBLE);
+                                two.setVisibility(View.VISIBLE);
+                                restartButton.setVisibility(View.INVISIBLE);
+
                             } else {
                                 questionView.setText("Game Over");
+                                restartButton = new ImageButton(QuizActivity.this);
+                                restartButton.setBackgroundResource(R.drawable.rings);
+                                restartButton.setImageResource(R.drawable.ic_baseline_autorenew_24);
+                                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                                ConstraintLayout.LayoutParams oldParams = (ConstraintLayout.LayoutParams) questionView.getLayoutParams();
+                                layoutParams.topToBottom = questionView.getId();
+                                layoutParams.startToStart = questionView.getId();
+                                layoutParams.endToEnd = questionView.getId();
+                                restartButton.setLayoutParams(layoutParams);
+                                restartButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent nextIntent = new Intent(QuizActivity.this,QuizActivity.class);
+                                        nextIntent.putExtra("QUIZ","Multiply");
+                                        nextIntent.putExtra("USER_ID",user_id);
+                                        QuizActivity.this.startActivity(nextIntent);
+                                    }
+                                });
+                                cardView.addView(restartButton);
+                                one.setVisibility(View.INVISIBLE);
+                                two.setVisibility(View.INVISIBLE);
                                 if(currentScore > highScore) {
                                     HashMap<String, Object> hashMap = new HashMap<>();
                                     hashMap.put("SCORE", String.valueOf(currentScore));
@@ -423,14 +623,18 @@ public class QuizActivity extends AppCompatActivity {
                 question = String.valueOf(a) + "/" + String.valueOf(b);
                 questionView.setText(question);
                 d = random.nextInt(2) + 1;
+                e = random.nextInt(10) + 1;
+                if (e == c){
+                    e = c + random.nextInt(3) + 1;
+                }
                 //Assign values to radio buttons
                 if(d == 1){
                     one.setText(String.valueOf(c));
-                    two.setText(String.valueOf(random.nextInt(10)+1));
+                    two.setText(String.valueOf(e));
 
                 }
                 else{
-                    one.setText(String.valueOf(random.nextInt(10)+1));
+                    one.setText(String.valueOf(e));
                     two.setText(String.valueOf(c));
                 }
 
@@ -449,21 +653,49 @@ public class QuizActivity extends AppCompatActivity {
                                 d = random.nextInt(2) + 1;
                                 group.clearCheck();
                                 c = a / b;
+                                e = random.nextInt(10) + 1;
+                                if (e == c){
+                                    e = c + random.nextInt(3) + 1;
+                                }
                                 if (d == 1){
                                     one.setText(String.valueOf(c));
-                                    two.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(e));
                                 }
                                 else{
-                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    one.setText(String.valueOf(e));
                                     two.setText(String.valueOf(c));
                                 }
 
                                 question = a + "/" + b;
                                 questionView.setText(question);
+                                one.setVisibility(View.VISIBLE);
+                                two.setVisibility(View.VISIBLE);
+                                restartButton.setVisibility(View.INVISIBLE);
                             }
                             //Game Over
                             else {
                                 questionView.setText("Game Over");
+                                restartButton = new ImageButton(QuizActivity.this);
+                                restartButton.setBackgroundResource(R.drawable.rings);
+                                restartButton.setImageResource(R.drawable.ic_baseline_autorenew_24);
+                                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                                ConstraintLayout.LayoutParams oldParams = (ConstraintLayout.LayoutParams) questionView.getLayoutParams();
+                                layoutParams.topToBottom = questionView.getId();
+                                layoutParams.startToStart = questionView.getId();
+                                layoutParams.endToEnd = questionView.getId();
+                                restartButton.setLayoutParams(layoutParams);
+                                restartButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent nextIntent = new Intent(QuizActivity.this,QuizActivity.class);
+                                        nextIntent.putExtra("QUIZ","Divide");
+                                        nextIntent.putExtra("USER_ID",user_id);
+                                        QuizActivity.this.startActivity(nextIntent);
+                                    }
+                                });
+                                cardView.addView(restartButton);
+                                one.setVisibility(View.INVISIBLE);
+                                two.setVisibility(View.INVISIBLE);
                                 if(currentScore > highScoreDivide) {
                                     HashMap<String, Object> hashMap = new HashMap<>();
                                     hashMap.put("SCORE", String.valueOf(currentScore));
@@ -483,19 +715,48 @@ public class QuizActivity extends AppCompatActivity {
                                 b = linkedList.get(1);
                                 c = a / b;
                                 d = random.nextInt(2) + 1;
+                                e = random.nextInt(10) + 1;
+                                if (e == c){
+                                    e = c + random.nextInt(3) + 1;
+                                }
                                 group.clearCheck();
                                 if (d == 1){
                                     one.setText(String.valueOf(c));
-                                    two.setText(String.valueOf(random.nextInt(10)));
+                                    two.setText(String.valueOf(e));
                                 }
                                 else{
-                                    one.setText(String.valueOf(random.nextInt(10)));
+                                    one.setText(String.valueOf(e));
                                     two.setText(String.valueOf(c));
                                 }
                                 question = a + "/" + b;
                                 questionView.setText(question);
+                                one.setVisibility(View.VISIBLE);
+                                two.setVisibility(View.VISIBLE);
+                                restartButton.setVisibility(View.INVISIBLE);
+
                             } else {
                                 questionView.setText("Game Over");
+                                restartButton = new ImageButton(QuizActivity.this);
+                                restartButton.setBackgroundResource(R.drawable.rings);
+                                restartButton.setImageResource(R.drawable.ic_baseline_autorenew_24);
+                                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                                ConstraintLayout.LayoutParams oldParams = (ConstraintLayout.LayoutParams) questionView.getLayoutParams();
+                                layoutParams.topToBottom = questionView.getId();
+                                layoutParams.startToStart = questionView.getId();
+                                layoutParams.endToEnd = questionView.getId();
+                                restartButton.setLayoutParams(layoutParams);
+                                restartButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent nextIntent = new Intent(QuizActivity.this,QuizActivity.class);
+                                        nextIntent.putExtra("QUIZ","Divide");
+                                        nextIntent.putExtra("USER_ID",user_id);
+                                        QuizActivity.this.startActivity(nextIntent);
+                                    }
+                                });
+                                cardView.addView(restartButton);
+                                one.setVisibility(View.INVISIBLE);
+                                two.setVisibility(View.INVISIBLE);
                                 if(currentScore > highScoreDivide) {
                                     HashMap<String, Object> hashMap = new HashMap<>();
                                     hashMap.put("SCORE", String.valueOf(currentScore));

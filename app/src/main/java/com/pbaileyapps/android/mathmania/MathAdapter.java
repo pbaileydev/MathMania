@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 public class MathAdapter extends RecyclerView.Adapter<MathAdapter.MathViewHolder> {
     private ArrayList<String> subjectList;
+    private ArrayList<String> signList;
     private subjectSelector selectorInstance;
     private Context mContext;
     interface subjectSelector{
@@ -27,6 +28,10 @@ public class MathAdapter extends RecyclerView.Adapter<MathAdapter.MathViewHolder
         this.subjectList = subjectList;
     }
 
+    public void setSignList(ArrayList<String> signList) {
+        this.signList = signList;
+    }
+
     public void setSelectorInstance(subjectSelector selectorInstance) {
         this.selectorInstance = selectorInstance;
     }
@@ -35,18 +40,19 @@ public class MathAdapter extends RecyclerView.Adapter<MathAdapter.MathViewHolder
     @Override
     public MathAdapter.MathViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(mContext).inflate(R.layout.list_item,parent,false);
-        v.setBackgroundColor(Color.YELLOW);
         return new MathViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MathAdapter.MathViewHolder holder, final int position) {
-        if(subjectList.isEmpty()){
+        if(subjectList.isEmpty() || signList.isEmpty()){
             holder.textView.setText("No Subjects");
         }
         else{
             String subject = subjectList.get(position);
+            String sign = signList.get(position);
             holder.textView.setText(subject);
+            holder.signView.setText(sign);
             holder.textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -63,9 +69,11 @@ public class MathAdapter extends RecyclerView.Adapter<MathAdapter.MathViewHolder
     }
     public class MathViewHolder extends RecyclerView.ViewHolder{
         private TextView textView;
+        private TextView signView;
         public MathViewHolder(View v){
             super(v);
             textView = v.findViewById(R.id.subject_view);
+            signView = v.findViewById(R.id.math_sign);
         }
     }
 }

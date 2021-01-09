@@ -53,87 +53,83 @@ public class StatsActivity extends AppCompatActivity {
             }
         });
         firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference referenceAdd = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Addition");
-        DatabaseReference referenceSubtract = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Subtract");
-        DatabaseReference referenceMultiply = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Multiply");
-        DatabaseReference referenceDivide = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Divide");
 
-        referenceAdd.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue() != null) {
-                    addString = "Addition: \n" +snapshot.getValue().toString();
-                    add.setText(addString);
+            DatabaseReference referenceAdd = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Addition");
+            DatabaseReference referenceSubtract = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Subtraction");
+            DatabaseReference referenceMultiply = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Multiplication");
+            DatabaseReference referenceDivide = firebaseDatabase.getReference().child(user_id).child("Scores").child("High Scores").child("Division");
+
+            referenceAdd.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.getValue() != null) {
+                        addString = "Addition: \n" + snapshot.getValue().toString();
+                        add.setText(addString);
+                    } else {
+                        addString = "No high score yet";
+                        add.setText(addString);
+                    }
                 }
-                else {
-                    addString = "No high score yet";
-                    add.setText(addString);
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    error.getMessage();
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                error.getMessage();
-            }
-        });
-        referenceSubtract.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue() != null) {
-                    subtractString = "Subtraction: \n" +snapshot.getValue().toString();
-                    subtract.setText(subtractString);
+            });
+            referenceSubtract.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.getValue() != null) {
+                        subtractString = "Subtraction: \n" + snapshot.getValue().toString();
+                        subtract.setText(subtractString);
+                    } else {
+                        subtractString = "No high score yet";
+                        subtract.setText(subtractString);
+                    }
                 }
-                else {
-                    subtractString = "No high score yet";
-                    subtract.setText(subtractString);
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        referenceMultiply.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue() != null) {
-                    multiplyString = "Multiplication: \n" +snapshot.getValue().toString();
-                    multiply.setText(multiplyString);
+            });
+            referenceMultiply.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.getValue() != null) {
+                        multiplyString = "Multiplication: \n" + snapshot.getValue().toString();
+                        multiply.setText(multiplyString);
+                    } else {
+                        multiplyString = "No high score yet";
+                        multiply.setText(multiplyString);
+                    }
                 }
-                else {
-                    multiplyString = "No high score yet";
-                    multiply.setText(multiplyString);
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        referenceDivide.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue() != null) {
-                    divideString = "Division: \n" +snapshot.getValue().toString();
-                    divide.setText(divideString);
+            });
+            referenceDivide.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.getValue() != null) {
+                        divideString = "Division: \n" + snapshot.getValue().toString();
+                        divide.setText(divideString);
+                    } else {
+                        divideString = "No high score yet";
+                        divide.setText(divideString);
+                    }
                 }
-                else {
-                    divideString = "No high score yet";
-                    divide.setText(divideString);
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+            });
 
 
+        }
 
 
-
-    }
 }

@@ -6,13 +6,13 @@
     android:theme="@style/AppTheme"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@drawable/rectangle"
     tools:context=".LoginActivity">
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:background="@android:color/transparent"
         android:src="@drawable/iconmath2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,7 +34,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView">
-
         <EditText
             android:id="@+id/editTextTextEmailAddress"
             android:layout_width="match_parent"
@@ -42,7 +41,9 @@
             android:ems="10"
             android:hint="email"
             android:inputType="textEmailAddress"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            />
+
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -50,7 +51,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        app:boxBackgroundColor="#FFFFFF"
         app:boxBackgroundMode="outline"
         app:boxCornerRadiusBottomEnd="10dp"
         app:boxCornerRadiusBottomStart="10dp"
@@ -70,7 +70,6 @@
             android:layout_gravity="center_horizontal"
             android:ems="10"
             android:hint="password"
-
             android:inputType="textPassword"
             android:textColor="@android:color/black" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -92,18 +91,20 @@
         app:layout_constraintTop_toBottomOf="@id/inputlayoutpassword" />
 
     <Button
-        android:background="@android:color/holo_blue_light"
-        android:stateListAnimator="@null"
         android:id="@+id/signup"
         style="@style/ButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-       android:textColor="@android:color/white"
+        android:background="@android:color/holo_blue_light"
         android:elevation="0dp"
         android:fontFamily="sans-serif-condensed-medium"
+        android:stateListAnimator="@null"
         android:text="Sign up"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
